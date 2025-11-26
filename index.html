@@ -2,157 +2,282 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Documents Utilisateurs</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<title>Programme des Matchs A6</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
-h1 { text-align:center; margin-bottom:20px; }
-section { margin-bottom:50px; }
-.doc { padding:20px; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
-.cv { background:#e6f7ff; }
-.lettre { background:#fff0f6; }
-.plan { background:#f0fff0; }
-.photo-box { width:120px; height:140px; border:2px dashed #999; margin:0 auto 10px auto; display:flex; align-items:center; justify-content:center; font-size:12px; color:#777; border-radius:8px; }
-h2 { text-align:center; font-size:22px; margin-bottom:10px; }
-h3 { margin-top:10px; font-size:18px; }
-p { margin:5px 0; line-height:1.4; }
-strong { color:#333; }
-textarea { width:100%; padding:6px; margin:5px 0; border-radius:6px; border:1px solid #ccc; resize:vertical; }
-button { margin:5px; padding:8px 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
-.pdfBtn { background:#007BFF; color:#fff; }
-.waBtn { background:#25D366; color:#fff; }
-canvas { display:block; margin:10px auto; border-radius:8px; }
+body {
+    margin: 0;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    background: #e1ecff;
+}
+.page {
+    width: 420px; /* A6 width */
+    height: 595px; /* A6 height */
+    margin: auto;
+    position: relative;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+#backgroundPhoto {
+    position: absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    object-fit: cover;
+    z-index:0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.header .title {
+    flex: 1;
+}
+
+.header h1, .header h2 {
+    margin: 0;
+}
+.header h1 { font-size: 18px; }
+.header h2 { font-size: 12px; color:#555; }
+
+#logoBox {
+    width: 60px;
+    height: 60px;
+    border: 2px dashed #999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 5px;
+    background: white;
+}
+
+button {
+    padding: 5px 8px;
+    margin: 5px 5px 10px 0;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    position: relative;
+    background-color: rgba(255,255,255,0.9);
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* ... autres styles restent identiques ... */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    z-index: 2;
+    position: relative;
+    background-color: rgba(255,255,255,0.85);
+    font-size: 12px; /* augmentée pour meilleure lisibilité */
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 5px; /* augmenté */
+    text-align: center;
+    height: 25px; /* hauteur plus grande */
+}
+
+th { 
+    background: #10b981; 
+    color:white; 
+    font-size: 12px; /* taille titre colonnes */
+}
+#paymentPopup {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.5);
+    justify-content:center;
+    align-items:center;
+    z-index: 5;
+}
+
+#paymentPopup .popup-content {
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    width:250px;
+    text-align:center;
+}
+
+#paymentPopup textarea, #paymentPopup input { width:100%; margin-bottom:10px; }
+
+.signature {
+    margin-top: 15px;
+    font-size: 10px;
+    text-align: center;
+    color: #555;
+    position: relative;
+    z-index: 2;
+}
 </style>
 </head>
 <body>
 
-<h1>📋 Documents Utilisateurs</h1>
+<div class="page" id="pageContent">
+    <img id="backgroundPhoto" src="" alt="Photo de fond">
 
-<!-- ================== CV ================== -->
-<section>
-<h2>📄 CV</h2>
-<div id="cvDoc" class="doc cv">
-  <div class="photo-box">📷 Photo</div>
-  <h1 contenteditable="true" id="cvNom">Nom Utilisateur</h1>
-  <h3 contenteditable="true" id="cvProfession">Profession</h3>
-  <p><strong>📧 Email :</strong> <span contenteditable="true" id="cvEmail">exemple@mail.com</span></p>
-  <p><strong>📱 Tel MTN :</strong> <span contenteditable="true" id="cvTel">677000000</span></p>
-  <p><strong>📱 Tel Orange :</strong> <span contenteditable="true" id="cvTelOrange">699000000</span></p>
-  <p><strong>📍 Adresse :</strong> <span contenteditable="true" id="cvAdresse">Ville, Quartier</span></p>
-  <p><strong>❤️ Situation matrimoniale :</strong> <span contenteditable="true" id="cvSituation">Célibataire</span></p>
-  <p><strong>🍺 Alcoolique :</strong> <span contenteditable="true" id="cvAlcool">Non</span></p>
-  <p><strong>🎓 Dernier diplôme :</strong> <span contenteditable="true" id="cvDiplome">Licence</span></p>
-  <p><strong>🎯 Loisirs :</strong> <span contenteditable="true" id="cvLoisirs">Lecture</span></p>
-  <p><strong>✨ Caractère :</strong> <span contenteditable="true" id="cvCaractere">Sociable</span></p>
-  <p><strong>🕌 Religion :</strong> <span contenteditable="true" id="cvReligion">Chrétien</span></p>
-  <p><strong>🌍 Région d'origine :</strong> <span contenteditable="true" id="cvRegion">Centre</span></p>
-  <p><strong>🎂 Âge :</strong> <span contenteditable="true" id="cvAge">25</span></p>
-  <p><strong>👨 Nom du père :</strong> <span contenteditable="true" id="cvNomPere">Père</span></p>
-  <p><strong>👩 Nom de la mère :</strong> <span contenteditable="true" id="cvNomMere">Mère</span></p>
-  <p><strong>💰 Dernier salaire :</strong> <span contenteditable="true" id="cvSalaire">200.000 FCFA</span></p>
+    <div class="header">
+        <div class="title">
+            <h1 contenteditable="true">Nom de l'entreprise</h1>
+            <h2 contenteditable="true">Programme des Matchs 2025</h2>
+        </div>
+        <div id="logoBox">Logo
+            <input type="file" id="logoInput" accept="image/*" style="display:none;">
+        </div>
+    </div>
 
-  <h3>✍️ Signature / annotations :</h3>
-  <canvas id="cvCanvas" width="300" height="100" style="border:2px dashed #2c3e50; background:#fff;"></canvas>
-  <div style="text-align:center; margin-top:5px;">
-    <button onclick="clearCanvas('cvCanvas')" class="btn">🧹 Effacer</button>
-  </div>
+    <button id="addMatchBtn">Ajouter Match</button>
+    <button id="downloadBtn">Télécharger PDF</button>
 
-  <div class="doc-buttons">
-    <button class="btn pdfBtn" onclick="downloadPDF('cvDoc')">📥 Télécharger PDF</button>
-    <button class="btn waBtn" onclick="shareWhatsApp('cvDoc')">📤 Partager WhatsApp</button>
-  </div>
+    <table id="matchesTable">
+        <tr>
+            <th>Equipe A</th>
+            <th>Equipe B</th>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Lieu</th>
+            <th>Organisateur</th>
+        </tr>
+        <tr contenteditable="true">
+            <td>Team 1</td>
+            <td>Team 2</td>
+            <td>12/04/2025</td>
+            <td>16:00</td>
+            <td>Stade Central</td>
+            <td>Ligue Locale</td>
+        </tr>
+    </table>
+
+    <div class="signature">
+        Créé par LesFacilitateurs WhatsApp : +237651475255
+    </div>
 </div>
-</section>
 
-<!-- ================== Lettre ================== -->
-<section>
-<h2>✉️ Lettre de Motivation</h2>
-<div id="lettreDoc" class="doc lettre">
-  <h1 style="text-align:center; font-size:24px; font-weight:bold; color:#2980b9;">💌 Lettre de Motivation</h1>
-  <p><strong>👤 Nom :</strong> <span contenteditable="true" id="lettreNom">Jean Dupont</span></p>
-  <p><strong>🏢 Entreprise :</strong> <span contenteditable="true" id="lettreEntreprise">Exemple SARL</span></p>
-  <p><strong>💼 Poste :</strong> <span contenteditable="true" id="lettrePoste">Développeur Web</span></p>
-  <p contenteditable="true" id="lettreContenu" style="margin-top:10px; line-height:1.6;">
-    Je suis motivé à rejoindre votre équipe...
-  </p>
-
-  <h3>✍️ Signature / annotations :</h3>
-  <canvas id="lettreCanvas" width="300" height="100" style="border:2px dashed #2980b9; background:#fff;"></canvas>
-  <div style="text-align:center; margin-top:5px;">
-    <button onclick="clearCanvas('lettreCanvas')" class="btn">🧹 Effacer</button>
-  </div>
-
-  <div class="doc-buttons">
-    <button class="btn pdfBtn" onclick="downloadPDF('lettreDoc')">📥 Télécharger PDF</button>
-    <button class="btn waBtn" onclick="shareWhatsApp('lettreDoc')">📤 Partager WhatsApp</button>
-  </div>
+<!-- Popup paiement -->
+<div id="paymentPopup">
+    <div class="popup-content">
+        <h3>Paiement HelepMoney</h3>
+        <p>Effectuez votre paiement de 100 FCFA à :</p>
+        <ul style="text-align:left;">
+            <li>Kono Emini Michel - MoMo : 651475255</li>
+            <li>Kono Emini Michel - OM : 656050097</li>
+        </ul>
+        <p>Ou utilisez le code admin :</p>
+        <input type="text" id="adminCode" placeholder="Code admin">
+        <textarea id="transactionMsg" placeholder="Collez le message Momo ici"></textarea>
+        <button id="validateBtn">Valider</button>
+        <button id="cancelPopup">Annuler</button>
+        <p id="paymentError" style="color:red; font-size:12px;"></p>
+    </div>
 </div>
-</section>
-
-<!-- ================== Plan ================== -->
-<section>
-<h2>🗺️ Plan de Localisation</h2>
-<div id="planDoc" class="doc plan">
-  <h1 style="text-align:center; font-size:24px; font-weight:bold; color:#8e44ad;">🗺️ Plan de Localisation</h1>
-  <p><strong>🏠 Adresse :</strong> <span contenteditable="true" id="planLieu">Quartier XYZ</span></p>
-  <p contenteditable="true" id="planDetails">Près du marché central</p>
-
-  <h3>✍️ Signature / annotations :</h3>
-  <canvas id="planCanvas" width="300" height="100" style="border:2px dashed #8e44ad; background:#fff;"></canvas>
-  <div style="text-align:center; margin-top:5px;">
-    <button onclick="clearCanvas('planCanvas')" class="btn">🧹 Effacer</button>
-  </div>
-
-  <div class="doc-buttons">
-    <button class="btn pdfBtn" onclick="downloadPDF('planDoc')">📥 Télécharger PDF</button>
-    <button class="btn waBtn" onclick="shareWhatsApp('planDoc')">📤 Partager WhatsApp</button>
-  </div>
-</div>
-</section>
 
 <script>
-// ================== Canevas Signature ==================
-function initCanvas(canvasId){
-  const canvas = document.getElementById(canvasId);
-  const ctx = canvas.getContext("2d");
-  let drawing = false;
-  canvas.addEventListener("mousedown",()=>drawing=true);
-  canvas.addEventListener("mouseup",()=>{drawing=false;ctx.beginPath();});
-  canvas.addEventListener("mouseout",()=>{drawing=false;ctx.beginPath();});
-  canvas.addEventListener("mousemove",(e)=>{if(!drawing)return; ctx.lineWidth=2; ctx.lineCap="round"; ctx.strokeStyle="#2c3e50"; ctx.lineTo(e.offsetX,e.offsetY); ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY);});
-  // tactile
-  canvas.addEventListener("touchstart",(e)=>{e.preventDefault();drawing=true;});
-  canvas.addEventListener("touchend",()=>{drawing=false; ctx.beginPath();});
-  canvas.addEventListener("touchcancel",()=>{drawing=false; ctx.beginPath();});
-  canvas.addEventListener("touchmove",(e)=>{e.preventDefault(); if(!drawing)return; let rect=canvas.getBoundingClientRect(); let x=e.touches[0].clientX-rect.left; let y=e.touches[0].clientY-rect.top; ctx.lineWidth=2; ctx.lineCap="round"; ctx.strokeStyle="#2c3e50"; ctx.lineTo(x,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y);});
-}
-function clearCanvas(id){const c=document.getElementById(id); c.getContext("2d").clearRect(0,0,c.width,c.height);}
-initCanvas('cvCanvas'); initCanvas('lettreCanvas'); initCanvas('planCanvas');
+// Logo carré
+const logoBox = document.getElementById('logoBox');
+const logoInput = document.getElementById('logoInput');
+logoBox.addEventListener('click', ()=> logoInput.click());
+logoInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = e=>{
+            logoBox.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
+        }
+        reader.readAsDataURL(file);
+    }
+});
 
-// ================== PDF ==================
-async function downloadPDF(docId){
-  const doc = document.getElementById(docId);
-  const canvas = await html2canvas(doc, { scale:2 });
-  const imgData = canvas.toDataURL('image/png');
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF({orientation:"p",unit:"pt",format:[canvas.width,canvas.height]});
-  pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);
-  pdf.save(docId+'.pdf');
-}
+// Photo de fond
+const backgroundPhoto = document.getElementById('backgroundPhoto');
+backgroundPhoto.addEventListener('click', ()=>{
+    const file = document.createElement('input');
+    file.type='file'; file.accept='image/*';
+    file.onchange = e=>{
+        const reader = new FileReader();
+        reader.onload = ev=>{ backgroundPhoto.src = ev.target.result; }
+        reader.readAsDataURL(e.target.files[0]);
+    };
+    file.click();
+});
 
-// ================== WhatsApp ==================
-async function shareWhatsApp(docId){
-  const doc = document.getElementById(docId);
-  const canvas = await html2canvas(doc, { scale:2 });
-  const imgData = canvas.toDataURL('image/png');
-  // encode en base64 pour WhatsApp Web
-  const text = "Voici mon document :\n\n";
-  const url = `https://wa.me/?text=${encodeURIComponent(text+imgData)}`;
-  window.open(url,'_blank');
+// Ajouter match
+const addMatchBtn = document.getElementById('addMatchBtn');
+addMatchBtn.addEventListener('click', ()=>{
+    const table = document.getElementById('matchesTable');
+    const row = table.insertRow();
+    row.contentEditable = "true";
+    for(let i=0;i<6;i++) row.insertCell();
+});
+
+// Paiement PDF
+const downloadBtn = document.getElementById('downloadBtn');
+const popup = document.getElementById('paymentPopup');
+const cancelPopup = document.getElementById('cancelPopup');
+const validateBtn = document.getElementById('validateBtn');
+const adminCode = document.getElementById('adminCode');
+const transactionMsg = document.getElementById('transactionMsg');
+const paymentError = document.getElementById('paymentError');
+
+const validUsers = [
+    {name:"Kono Emini Michel", momo:"651475255"},
+    {name:"Kono Emini Michel", momo:"656050097"}
+];
+const VIP_CODE = "233233";
+let usedIds = [];
+
+downloadBtn.addEventListener('click', ()=> popup.style.display='flex');
+cancelPopup.addEventListener('click', ()=>{
+    popup.style.display='none';
+    paymentError.textContent=''; adminCode.value=''; transactionMsg.value='';
+});
+
+validateBtn.addEventListener('click', ()=>{
+    const code = adminCode.value.trim();
+    const msg = transactionMsg.value.trim();
+    paymentError.textContent='';
+
+    if(code===VIP_CODE){ popup.style.display='none'; downloadPDF(); return; }
+
+    const regex = /a\s(.+)\s\((\d+)\)\sId:(\d+)\sle\s([\d-]+\s[\d:]+)/i;
+    const match = msg.match(regex);
+    if(!match){ paymentError.textContent="Format invalide"; return; }
+    const [_, name, momo, txnId, dateStr] = match;
+    const txnDate = new Date(dateStr);
+    const now = new Date();
+    if(now - txnDate > 10*60*1000){ paymentError.textContent="Transaction trop ancienne"; return; }
+    if(!validUsers.find(u=>u.name===name && u.momo===momo)){ paymentError.textContent="Nom ou numéro invalide"; return; }
+    if(usedIds.includes(txnId)){ paymentError.textContent="Transaction déjà utilisée"; return; }
+    usedIds.push(txnId);
+    popup.style.display='none';
+    downloadPDF();
+});
+
+function downloadPDF(){
+    const element = document.getElementById('pageContent');
+    html2pdf().set({
+        filename:'Programme_Matchs_A6.pdf',
+        pagebreak: {mode:['avoid-all']},
+        margin:0.5
+    }).from(element).save();
 }
 </script>
-
 </body>
-</html> 
+</html>
