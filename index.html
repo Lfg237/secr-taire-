@@ -14,7 +14,7 @@ body {
 .page {
     width: 420px; /* A6 width */
     height: 595px; /* A6 height */
-    margin: auto;
+    margin: 20px auto;
     position: relative;
     background: white;
     padding: 15px;
@@ -75,28 +75,29 @@ button {
     font-size: 12px;
 }
 
-/* ... autres styles restent identiques ... */
-
 table {
     width: 100%;
     border-collapse: collapse;
     z-index: 2;
     position: relative;
     background-color: rgba(255,255,255,0.85);
-    font-size: 12px; /* augmentée pour meilleure lisibilité */
+    font-size: 12px;
+    max-height: 400px; /* hauteur pour scroll */
+    display: block;
+    overflow-y: auto;
 }
 
 th, td {
     border: 1px solid #ddd;
-    padding: 5px; /* augmenté */
+    padding: 5px;
     text-align: center;
-    height: 25px; /* hauteur plus grande */
+    height: 25px;
 }
 
 th { 
     background: #10b981; 
     color:white; 
-    font-size: 12px; /* taille titre colonnes */
+    font-size: 12px;
 }
 #paymentPopup {
     display:none;
@@ -272,11 +273,18 @@ validateBtn.addEventListener('click', ()=>{
 
 function downloadPDF(){
     const element = document.getElementById('pageContent');
-    html2pdf().set({
-        filename:'Programme_Matchs_A6.pdf',
-        pagebreak: {mode:['avoid-all']},
-        margin:0.5
-    }).from(element).save();
+
+    // Découpe automatique en pages si le tableau est trop long
+    const opt = {
+        margin: 0.5,
+        filename: 'Programme_Matchs_A6.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a6', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] }
+    };
+
+    html2pdf().set(opt).from(element).save();
 }
 </script>
 </body>
